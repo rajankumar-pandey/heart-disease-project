@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7fb">
+  <title>Heartwise | Heart health estimate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #142b3b;
+      --muted: #6c7e89;
+      --teal: #157d79;
+      --teal-dark: #0c6663;
+      --mint: #e8f5f2;
+      --line: #e6edf0;
+      --surface: #fff;
+      --page: #f4f7fb;
+      --coral: #ed786d;
+      font-family: "DM Sans", sans-serif;
+      color: var(--ink);
+      background: var(--page);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; }
+    button, input, select { font: inherit; }
+    .topbar {
+      height: 76px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 max(6vw, 24px); background: rgba(255,255,255,.88);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font: 800 19px "Manrope", sans-serif; letter-spacing: -.6px; }
+    .brand-mark {
+      width: 37px; height: 37px; display: grid; place-items: center; border-radius: 12px;
+      color: white; background: var(--teal); box-shadow: 0 5px 12px #157d7930;
+    }
+    .brand-mark svg { width: 21px; }
+    .top-note { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .top-note svg { width: 16px; color: var(--teal); }
+    main { max-width: 1120px; margin: 0 auto; padding: 53px 24px 72px; }
+    .intro { max-width: 750px; margin-bottom: 31px; }
+    .eyebrow { color: var(--teal); text-transform: uppercase; font-weight: 700; font-size: 11px; letter-spacing: 1.6px; }
+    h1 { font: 800 clamp(30px, 5vw, 43px)/1.16 "Manrope", sans-serif; letter-spacing: -1.8px; margin: 13px 0 11px; }
+    .intro p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 295px; gap: 22px; align-items: start; }
+    .form-card, .side-card { background: var(--surface); border: 1px solid var(--line); border-radius: 17px; box-shadow: 0 8px 28px #19364c08; }
+    .form-card { overflow: hidden; }
+    .card-head { padding: 23px 27px 20px; border-bottom: 1px solid var(--line); }
+    .card-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    h2 { margin: 0; font: 700 18px "Manrope", sans-serif; letter-spacing: -.4px; }
+    .step { color: var(--teal); background: var(--mint); padding: 7px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .card-head p { color: var(--muted); font-size: 13px; margin: 7px 0 0; }
+    form { padding: 23px 27px 27px; }
+    .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 19px 17px; }
+    .field label { display: block; margin-bottom: 7px; font-weight: 600; font-size: 12px; color: #334a58; }
+    .field .unit { color: #91a0a8; font-weight: 400; }
+    .field input, .field select {
+      width: 100%; height: 44px; border: 1px solid #dce6e9; border-radius: 9px;
+      background-color: #fff; color: var(--ink); padding: 0 12px; outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px #157d7917; }
+    .field input::placeholder { color: #a8b5bb; }
+    .submit-row { margin-top: 24px; display: flex; align-items: center; gap: 14px; }
+    .submit {
+      min-height: 47px; border: 0; border-radius: 9px; padding: 0 19px; color: #fff;
+      background: var(--teal); font-weight: 700; cursor: pointer; display: inline-flex;
+      align-items: center; gap: 10px; transition: background .2s, transform .2s;
+    }
+    .submit:hover { background: var(--teal-dark); transform: translateY(-1px); }
+    .submit:disabled { cursor: wait; opacity: .7; transform: none; }
+    .submit svg { width: 17px; }
+    .secure { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .secure svg { width: 14px; color: var(--teal); }
+    .side-card { padding: 22px; }
+    .side-icon { width: 42px; height: 42px; border-radius: 13px; background: var(--mint); display: grid; place-items: center; color: var(--teal); margin-bottom: 16px; }
+    .side-icon svg { width: 22px; }
+    .side-card h3 { margin: 0 0 8px; font: 700 16px "Manrope", sans-serif; }
+    .side-card > p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .divider { height: 1px; background: var(--line); margin: 18px 0; }
+    .tip { display: flex; gap: 10px; margin: 13px 0; color: #576c78; font-size: 12px; line-height: 1.5; }
+    .tip b { color: var(--teal); }
+    .notice { margin-top: 14px; padding: 14px; border-radius: 11px; background: #fff8f2; color: #806548; font-size: 11px; line-height: 1.6; border: 1px solid #f5ebde; }
+    .notice strong { display: block; color: #6f5030; margin-bottom: 4px; }
+    .result { display: none; padding: 18px; border-radius: 12px; margin-top: 21px; border: 1px solid var(--line); }
+    .result.visible { display: block; }
+    .result.success { background: #eff8f5; border-color: #d6ebe4; }
+    .result.error { background: #fff5f3; border-color: #f1d7d3; }
+    .result-title { font-weight: 700; font-size: 14px; margin: 0 0 5px; }
+    .result-text { color: #526775; font-size: 13px; margin: 0; line-height: 1.55; }
+    .result-probability { color: var(--teal-dark); font: 800 23px "Manrope", sans-serif; margin-top: 10px; }
+    .result.visible { padding: 0; overflow: hidden; background: #fff; }
+    .report-head { padding: 21px 22px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+    .report-kicker { margin: 0 0 5px; color: var(--teal); text-transform: uppercase; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; }
+    .report-head h3 { margin: 0; font: 700 19px "Manrope", sans-serif; }
+    .report-date { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
+    .report-actions { display: flex; align-items: center; gap: 8px; }
+    .report-button { border: 1px solid var(--line); background: white; color: #415765; border-radius: 8px; padding: 8px 11px; cursor: pointer; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .report-button:hover { border-color: var(--teal); color: var(--teal); }
+    .report-summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, .7fr); gap: 23px; padding: 22px; align-items: center; background: #f9fbfc; }
+    .report-status { display: inline-flex; align-items: center; gap: 7px; border-radius: 30px; background: var(--mint); color: var(--teal-dark); padding: 7px 10px; font-size: 10px; font-weight: 700; }
+    .report-status.high { background: #fff0ed; color: #ad4b41; }
+    .report-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .report-summary h4 { margin: 11px 0 5px; font: 700 17px "Manrope", sans-serif; }
+    .report-summary p { max-width: 460px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .probability-card { padding: 14px; border: 1px solid var(--line); border-radius: 11px; background: white; }
+    .probability-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 10px; }
+    .probability-label strong { color: var(--ink); font: 800 21px "Manrope", sans-serif; }
+    .probability-track { height: 7px; margin-top: 11px; background: #e9eff1; border-radius: 10px; overflow: hidden; }
+    .probability-fill { width: 0; height: 100%; border-radius: inherit; background: var(--teal); transition: width .5s ease; }
+    .probability-fill.high { background: var(--coral); }
+    .report-section { padding: 19px 22px 22px; }
+    .report-section h4 { margin: 0 0 13px; font: 700 13px "Manrope", sans-serif; }
+    .report-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .report-detail { border: 1px solid var(--line); border-radius: 9px; padding: 11px; min-width: 0; }
+    .report-detail span { display: block; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .report-detail strong { display: block; margin-top: 5px; color: var(--ink); font-size: 12px; overflow-wrap: anywhere; }
+    .guidance-section { padding: 0 22px 20px; }
+    .guidance-section h4 { margin: 0 0 5px; font: 700 13px "Manrope", sans-serif; }
+    .guidance-intro { margin: 0 0 12px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .guidance-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .guidance-card { padding: 13px; border: 1px solid var(--line); border-radius: 10px; }
+    .guidance-card h5 { margin: 0 0 8px; color: var(--teal-dark); font: 700 11px "Manrope", sans-serif; }
+    .guidance-card ul { margin: 0; padding-left: 17px; color: #526775; font-size: 11px; line-height: 1.6; }
+    .guidance-card li + li { margin-top: 5px; }
+    .report-disclaimer { margin: 0 22px 20px; padding: 12px 14px; border-radius: 9px; background: #fff8f2; color: #806548; font-size: 11px; line-height: 1.55; }
+    .result.error { padding: 14px 16px; }
+    .result.error .result-text { color: #963e35; }
+    .group-title { grid-column: 1 / -1; padding-top: 2px; color: var(--teal); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .group-title:not(:first-child) { margin-top: 3px; padding-top: 13px; border-top: 1px solid var(--line); }
+    footer { text-align: center; color: #87959c; font-size: 11px; margin: 28px 0 0; }
+    @media (max-width: 780px) {
+      main { padding-top: 38px; }
+      .layout { grid-template-columns: 1fr; }
+      .side-card { display: grid; grid-template-columns: 44px 1fr; gap: 0 14px; }
+      .side-icon { grid-row: span 2; margin: 0; }
+      .side-card h3 { align-self: end; }
+      .side-card > p { grid-column: 2; }
+      .divider, .tip, .notice { grid-column: 1 / -1; }
+      .report-summary { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 500px) {
+      .topbar { height: 64px; padding: 0 18px; }
+      .top-note { font-size: 0; }
+      main { padding: 31px 15px 46px; }
+      .fields { grid-template-columns: 1fr; gap: 15px; }
+      .card-head, form { padding-left: 18px; padding-right: 18px; }
+      .submit-row { align-items: flex-start; flex-direction: column; }
+      .submit { width: 100%; justify-content: center; }
+      .report-head { flex-direction: column; }
+      .report-actions { width: 100%; }
+      .report-button { flex: 1; }
+      .report-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .guidance-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      @page { margin: 16mm; }
+      body { min-width: 0; background: white; }
+      .topbar, .intro, .side-card, footer, .card-head, form > .fields, .submit-row, .report-actions { display: none !important; }
+      main { max-width: none; padding: 0; }
+      .layout { display: block; }
+      .form-card { display: block !important; overflow: visible; border: 0; box-shadow: none; }
+      .form-card form { padding: 0; }
+      .result.visible { display: block !important; overflow: visible; border: 0; box-shadow: none; }
+      .report-head, .report-summary, .report-section, .guidance-section, .report-disclaimer { break-inside: avoid; }
+      .report-summary { background: white; }
+      .report-detail, .guidance-card, .probability-card { border-color: #ccd6da; }
+      .report-disclaimer { background: white; border: 1px solid #e6edf0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20.8 8.6c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.6 4.6 0 0 1 12 6.4a4.6 4.6 0 0 1 8.8 2.2Z" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 12h3l1.6-3.2 2.3 6 1.6-3h4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      Heartwise
+    </div>
+    <div class="top-note">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 3 8.6 7 10 4-1.4 7-5.4 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.7"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Private health screening
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="eyebrow">A clearer picture of your heart health</div>
+      <h1>Understand your heart health.</h1>
+      <p>Enter the health measurements below to get a machine-learning estimate. It takes about a minute, and every field helps build a more complete picture.</p>
+    </section>
+
+    <div class="layout">
+      <section class="form-card" aria-labelledby="form-title">
+        <div class="card-head">
+          <div class="card-heading">
+            <h2 id="form-title">Your health details</h2>
+            <span class="step">11 details</span>
+          </div>
+          <p>Use values from your most recent check-up where possible.</p>
+        </div>
+        <form id="prediction-form">
+          <div class="fields">
+            <div class="group-title">About you</div>
+            <div class="field"><label for="age">Age <span class="unit">(years)</span></label><input id="age" name="Age" type="number" min="18" max="120" placeholder="e.g. 52" required></div>
+            <div class="field"><label for="sex">Sex</label><select id="sex" name="Sex" required><option value="" disabled selected>Select</option><option value="M">Male</option><option value="F">Female</option></select></div>
+            <div class="group-title">Measurements</div>
+            <div class="field"><label for="resting_bp">Resting blood pressure <span class="unit">(mm Hg)</span></label><input id="resting_bp" name="RestingBP" type="number" min="60" max="250" placeholder="e.g. 120" required></div>
+            <div class="field"><label for="cholesterol">Cholesterol <span class="unit">(mg/dL)</span></label><input id="cholesterol" name="Cholesterol" type="number" min="0" max="700" placeholder="e.g. 200" required></div>
+            <div class="field"><label for="fasting_bs">Fasting blood sugar &gt; 120 mg/dL</label><select id="fasting_bs" name="FastingBS" required><option value="" disabled selected>Select</option><option value="1">Yes</option><option value="0">No</option></select></div>
+            <div class="field"><label for="max_hr">Maximum heart rate <span class="unit">(bpm)</span></label><input id="max_hr" name="MaxHR" type="number" min="50" max="250" placeholder="e.g. 150" required></div>
+            <div class="field"><label for="oldpeak">ST depression <span class="unit">(oldpeak)</span></label><input id="oldpeak" name="Oldpeak" type="number" min="0" max="10" step="0.1" placeholder="e.g. 1.0" required></div>
+            <div class="group-title">Heart test results</div>
+            <div class="field"><label for="chest_pain">Chest pain type</label><select id="chest_pain" name="ChestPainType" required><option value="" disabled selected>Select type</option><option value="ATA">Atypical angina</option><option value="NAP">Non-anginal pain</option><option value="TA">Typical angina</option><option value="ASY">Asymptomatic</option></select></div>
+            <div class="field"><label for="resting_ecg">Resting ECG</label><select id="resting_ecg" name="RestingECG" required><option value="" disabled selected>Select result</option><option value="Normal">Normal</option><option value="ST">ST-T wave abnormality</option><option value="LVH">Left ventricular hypertrophy</option></select></div>
+            <div class="field"><label for="exercise_angina">Exercise-induced angina</label><select id="exercise_angina" name="ExerciseAngina" required><option value="" disabled selected>Select</option><option value="Y">Yes</option><option value="N">No</option></select></div>
+            <div class="field"><label for="st_slope">Peak exercise ST slope</label><select id="st_slope" name="ST_Slope" required><option value="" disabled selected>Select slope</option><option value="Up">Upsloping</option><option value="Flat">Flat</option><option value="Down">Downsloping</option></select></div>
+          </div>
+          <div class="submit-row">
+            <button class="submit" id="submit-button" type="submit">
+              Get my estimate
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="secure">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7"/></svg>
+              Your information stays on this server.
+            </span>
+          </div>
+          <div id="result" class="result" role="status" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <aside class="side-card">
+        <div class="side-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 5 6v5c0 4.6 3 8.6 7 10 4-1.4 7-5.4 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.7"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>About this estimate</h3>
+        <p>This tool uses a machine-learning model and the information you provide to estimate a potential heart disease risk signal.</p>
+        <div class="divider"></div>
+        <div class="tip"><b>01</b><span>Use recent, accurate readings from a healthcare check-up.</span></div>
+        <div class="tip"><b>02</b><span>Ask a healthcare professional if you are unsure about a measurement.</span></div>
+        <div class="notice"><strong>For information only</strong>This estimate is not a diagnosis or a substitute for professional medical advice. If you have urgent symptoms, seek emergency care.</div>
+      </aside>
+    </div>
+    <footer>Heartwise is an informational tool. Always consult a qualified healthcare professional about your health.</footer>
+  </main>
+
+  <script>
+    const form = document.getElementById("prediction-form");
+    const button = document.getElementById("submit-button");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      button.disabled = true;
+      button.firstChild.textContent = "Calculating…";
+      result.className = "result";
+      result.replaceChildren();
+
+      const values = Object.fromEntries(new FormData(form).entries());
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        const responseText = await response.text();
+        if (!responseText.trim()) {
+          throw new Error("The prediction server returned an empty response. Start the Flask app with `python heartdisease.py`, then open http://127.0.0.1:5000.");
+        }
+
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error("The prediction server did not return JSON. Start the Flask app with `python heartdisease.py`, then open http://127.0.0.1:5000.");
+        }
+        if (!response.ok) throw new Error(data.error || "The estimate could not be calculated.");
+
+        const report = data.report;
+        if (!report || !Number.isFinite(Number(data.probability))) {
+          throw new Error("The prediction service returned an incomplete report. Please try again.");
+        }
+
+        const isHigherRisk = Number(data.prediction) === 1;
+        const probabilityValue = Math.min(100, Math.max(0, Number(data.probability)));
+        result.className = "result visible success";
+
+        const reportHead = document.createElement("header");
+        reportHead.className = "report-head";
+        const reportTitle = document.createElement("div");
+        const kicker = document.createElement("p");
+        kicker.className = "report-kicker";
+        kicker.textContent = "Prediction report";
+        const title = document.createElement("h3");
+        title.textContent = "Your heart health estimate";
+        const date = document.createElement("p");
+        date.className = "report-date";
+        date.textContent = `Generated ${new Intl.DateTimeFormat(undefined, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(new Date())}`;
+        reportTitle.append(kicker, title, date);
+
+        const actions = document.createElement("div");
+        actions.className = "report-actions";
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "report-button";
+        editButton.textContent = "Edit answers";
+        editButton.addEventListener("click", () => {
+          document.getElementById("age").focus();
+          form.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        const printButton = document.createElement("button");
+        printButton.type = "button";
+        printButton.className = "report-button";
+        printButton.textContent = "Print report";
+        printButton.addEventListener("click", () => window.print());
+        actions.append(editButton, printButton);
+        reportHead.append(reportTitle, actions);
+
+        const summary = document.createElement("section");
+        summary.className = "report-summary";
+        const interpretation = document.createElement("div");
+        const status = document.createElement("span");
+        status.className = `report-status${isHigherRisk ? " high" : ""}`;
+        status.textContent = isHigherRisk ? "Higher risk signal" : "Lower risk signal";
+        const summaryTitle = document.createElement("h4");
+        summaryTitle.textContent = isHigherRisk
+          ? "Consider discussing these results with a clinician"
+          : "No elevated signal identified by the model";
+        const summaryText = document.createElement("p");
+        summaryText.textContent = data.message;
+        interpretation.append(status, summaryTitle, summaryText);
+
+        const probabilityCard = document.createElement("div");
+        probabilityCard.className = "probability-card";
+        const probabilityLabel = document.createElement("div");
+        probabilityLabel.className = "probability-label";
+        const probabilityCaption = document.createElement("span");
+        probabilityCaption.textContent = "Model estimate";
+        const probabilityNumber = document.createElement("strong");
+        probabilityNumber.textContent = probabilityValue > 0 && probabilityValue < 0.05
+          ? "<0.1%"
+          : `${probabilityValue.toFixed(1)}%`;
+        probabilityLabel.append(probabilityCaption, probabilityNumber);
+        const track = document.createElement("div");
+        track.className = "probability-track";
+        track.setAttribute("role", "progressbar");
+        track.setAttribute("aria-label", "Model-estimated probability");
+        track.setAttribute("aria-valuemin", "0");
+        track.setAttribute("aria-valuemax", "100");
+        track.setAttribute("aria-valuenow", String(probabilityValue));
+        const fill = document.createElement("div");
+        fill.className = `probability-fill${isHigherRisk ? " high" : ""}`;
+        fill.style.width = `${probabilityValue}%`;
+        track.append(fill);
+        probabilityCard.append(probabilityLabel, track);
+        summary.append(interpretation, probabilityCard);
+
+        const detailsSection = document.createElement("section");
+        detailsSection.className = "report-section";
+        const detailsTitle = document.createElement("h4");
+        detailsTitle.textContent = "Measurements in this report";
+        const details = document.createElement("div");
+        details.className = "report-details";
+        const labels = {
+          Age: ["Age", (value) => `${value} years`],
+          Sex: ["Sex", (value) => value === "M" ? "Male" : "Female"],
+          ChestPainType: ["Chest pain type", (value) => ({
+            ATA: "Atypical angina", NAP: "Non-anginal pain", TA: "Typical angina", ASY: "Asymptomatic",
+          }[value] || value)],
+          RestingBP: ["Resting blood pressure", (value) => `${value} mm Hg`],
+          Cholesterol: ["Cholesterol", (value) => value === "0" ? "Not provided" : `${value} mg/dL`],
+          FastingBS: ["Fasting blood sugar > 120 mg/dL", (value) => value === "1" ? "Yes" : "No"],
+          RestingECG: ["Resting ECG", (value) => ({
+            Normal: "Normal", ST: "ST-T wave abnormality", LVH: "Left ventricular hypertrophy",
+          }[value] || value)],
+          MaxHR: ["Maximum heart rate", (value) => `${value} bpm`],
+          ExerciseAngina: ["Exercise-induced angina", (value) => value === "Y" ? "Yes" : "No"],
+          Oldpeak: ["ST depression (oldpeak)", (value) => value],
+          ST_Slope: ["Peak exercise ST slope", (value) => ({
+            Up: "Upsloping", Flat: "Flat", Down: "Downsloping",
+          }[value] || value)],
+        };
+        for (const [key, [label, format]] of Object.entries(labels)) {
+          const item = document.createElement("div");
+          item.className = "report-detail";
+          const itemLabel = document.createElement("span");
+          itemLabel.textContent = label;
+          const itemValue = document.createElement("strong");
+          itemValue.textContent = format(String(report[key] ?? ""));
+          item.append(itemLabel, itemValue);
+          details.append(item);
+        }
+        detailsSection.append(detailsTitle, details);
+
+        const guidance = document.createElement("section");
+        guidance.className = "guidance-section";
+        const guidanceTitle = document.createElement("h4");
+        guidanceTitle.textContent = "Everyday habits that support heart health";
+        const guidanceIntro = document.createElement("p");
+        guidanceIntro.className = "guidance-intro";
+        guidanceIntro.textContent = "General suggestions for heart health, not personalized advice based on this model estimate.";
+        const guidanceGrid = document.createElement("div");
+        guidanceGrid.className = "guidance-grid";
+        const guidanceGroups = [
+          {
+            title: "Consider increasing",
+            tips: [
+              "Vegetables, fruit, beans, and whole grains.",
+              "Regular physical activity, building up gradually as appropriate for you.",
+              "Time for sleep and regular health check-ups.",
+            ],
+          },
+          {
+            title: "Consider limiting",
+            tips: [
+              "Very salty and heavily processed foods.",
+              "Sugary drinks and frequent processed meats.",
+              "Tobacco; if you smoke, ask a healthcare professional about support to quit.",
+            ],
+          },
+        ];
+        for (const group of guidanceGroups) {
+          const card = document.createElement("div");
+          card.className = "guidance-card";
+          const heading = document.createElement("h5");
+          heading.textContent = group.title;
+          const list = document.createElement("ul");
+          for (const tip of group.tips) {
+            const item = document.createElement("li");
+            item.textContent = tip;
+            list.append(item);
+          }
+          card.append(heading, list);
+          guidanceGrid.append(card);
+        }
+        guidance.append(guidanceTitle, guidanceIntro, guidanceGrid);
+
+        const disclaimer = document.createElement("p");
+        disclaimer.className = "report-disclaimer";
+        disclaimer.textContent = "This machine-learning estimate is for informational purposes only. It is not a diagnosis and does not replace medical advice. Check with a healthcare professional before making major changes to diet or exercise, especially if you have a health condition. Seek emergency care for urgent symptoms.";
+        result.replaceChildren(reportHead, summary, detailsSection, guidance, disclaimer);
+        result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (error) {
+        result.className = "result visible error";
+        const message = document.createElement("p");
+        message.className = "result-text";
+        message.textContent = error.message || "Unable to reach the prediction service. Please try again.";
+        result.append(message);
+      } finally {
+        button.disabled = false;
+        button.firstChild.textContent = "Get my estimate";
+      }
+    });
+  </script>
+</body>
+</html>
